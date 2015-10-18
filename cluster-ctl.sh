@@ -13,33 +13,43 @@
 # machine installed on said host machine
 # hostname and guest-name should be separated by whitespace
 # lines can begin with whitespace
-function startvm {
+startvm() {
   host=$1;
   guest=$2;
   ssh $host "VBoxHeadless --startvm $guest" &
 }
 
-contains() {
-  for word in $1; do
-    [[ $word = $2 ]] && return 0
-  done
-  return 1
+freezeVm(){
+    host=$1;
+    guest=$2;
+    ssh $host "VBoxManage controlvm $guest savestate" &
 }
 
-usage_msg='usage: cluster-ctl [-f host_file] start|stop
-second line';
-
-function exit_valid_cmds_msg {
-  echo $usage_msg;
-  exit 1;
+iterate_hosts(){
+    cmd=$1;
+    input_file=$2;
+    while read host guest
+    do
+	[[ "$host" =~ ^#.*$ ]] && continue
+	$cmd $host $guest
+    done < $input_file
 }
 
-cmd=$2;
-cmds='start stop';
-contains cmds cmd && continue || exit_valid_cmds_msg;
+start() {
+    iterate_hosts startvm $1
+}
 
-while read host guest
-do
-  [[ "$host" =~ ^#.*$ ]] && continue
-  startvm $host $guest
-done < $1
+freeze(){
+    iterate_hosts freezeVm $1
+}
+
+case "$2" in
+  start)
+    start $1
+    ;;
+  freeze)
+    freeze $1
+    ;;
+  *)
+    echo "Usage: $0 filename {start|freeze}"
+esac
