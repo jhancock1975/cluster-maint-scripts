@@ -1,6 +1,8 @@
 #!/bin/bash
-# read input file to start up virtual box virtual machines
+# read input file to start or suspend a cluster 
+# of virtual box virtual machines
 # in headless mode
+
 # this script assumes the virtual machines already exist
 # and the current user can access all hosts via ssh with
 # pki authentication 
@@ -13,6 +15,7 @@
 # machine installed on said host machine
 # hostname and guest-name should be separated by whitespace
 # lines can begin with whitespace
+
 startvm() {
   host=$1;
   guest=$2;
