@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $# -ne 3 ] ; then
+if [ $# -ne 2 ] ; then
   echo 'usage: $0 "security-group-id" "cidr"'
   echo 'where "security-group-id" is the AWS security group that the'
   echo 'NameNode and ResourceManager belong to - they should belong'
@@ -13,7 +13,7 @@ fi
 
 security_group=$1
 cidr=$2
-port_list=50070 8088
+port_list='50070 8088'
 
 for port_num in $port_list ; do
   aws ec2 authorize-security-group-ingress --group-id $security_group --protocol tcp --port 50070 --cidr $cidr 
